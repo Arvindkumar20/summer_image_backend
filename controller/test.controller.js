@@ -7,8 +7,9 @@ export const fetchTestData = async (req, res) => {
         message: "data fetched successfully",
         data
     });
-    res.json({ message: "hello" });
+    // res.json({ message: "hello" });
 }
+
 
 export const createImage=async(req,res)=>{
 const {url,author,prompt,date}=req.body;
@@ -29,7 +30,8 @@ return res.json({
 
 
 export const updateData = async (req, res) => {
-    const image = {
+    const {url ,author,date,prompt}=req.body;
+        const image = {
         url: "https://my.alfred.edu/zoom/_images/foster-lake.jpg",
         author: "update",
         prompt: "update",

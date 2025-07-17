@@ -1,38 +1,58 @@
+import cloudinary from "../config/cloudinary.js";
 import { Image } from "../models/image.js";
+import generate from "../utils/generate.js";
 
-export const generateImage = (req, res) => {
+// Assuming this returns a public image URL
 
-    const { url, author, prompt } = req.body;
+export const generateImage = async (req, res) => {
+    const { author, prompt } = req.body;
 
-    if (!url || !author || !prompt) {
-        return res.json({
-            message: "All fields are required"
+    if (!author || !prompt) {
+        return res.status(400).json({
+            message: "Author and prompt are required",
         });
     }
 
-    let image;
     try {
-        image = Image.create({
-            url,
+        // 🔄 Generate image using your AI service
+        const generatedUrl = await generate(prompt);
+        if (!generatedUrl) {
+            return res.status(500).json({
+                message: "Failed to generate image. Try again later.",
+            });
+        }
+
+        // ☁️ Upload to Cloudinary
+        const cloudinaryResponse = await cloudinary.uploader.upload(generatedUrl, {
+            folder: "imagepig_images",
+        });
+
+        if (!cloudinaryResponse?.secure_url||cloudinaryResponse==null) {
+            return res.status(500).json({
+                message: "Image upload to Cloudinary failed",
+            });
+        }
+
+        // 💾 Save to DB
+        const image = await Image.create({
+            url: cloudinaryResponse.secure_url,
             author,
-            prompt
+            prompt,
+        });
+
+        return res.status(201).json({
+            message: "Image generated and uploaded successfully",
+            image,
         });
 
     } catch (error) {
-        return res.json(error);
-    }
-
-    if (!image) {
-        return res.json({
-            message: "Image not generated please try again"
+        console.error("Error in generateImage:", error);
+        return res.status(500).json({
+            message: "Internal server error",
+            error: error.message,
         });
     }
-
-    return res.json({
-        message: "image generated",
-        image
-    })
-}
+};
 
 
 export const getHistory = async (req, res) => {
