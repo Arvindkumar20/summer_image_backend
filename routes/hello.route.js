@@ -1,10 +1,11 @@
 import express from "express";
-import { createUser, getHello, updateUser } from "../controller/hello.js";
+import { createUser, deleteUser, getUsers, updateUser } from "../controller/hello.js";
 
-const router =express.Router();
+const router = express.Router();
 
-router.get("/get-hello",getHello);
-router.post("/create-user",createUser);
-router.put("/update-user",updateUser);
+router.get("/get-user", getUsers);
+router.post("/create-user", createUser);
+router.put("/update-user/:id", updateUser);
+router.delete("/delete-user/:id", deleteUser);
 
-export const helloRouter=router;
+export const helloRouter = router;
