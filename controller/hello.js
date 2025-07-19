@@ -93,6 +93,7 @@ export const updateUser = async (req, res) => {
     //         message: "all feilds are required"
     //     });
     // }
+    
     if (!name || !phone || !address || name == "" || name == null || phone == "" || phone == null || address == null || address == "") {
     return res.json({
         message: "all feilds are required"

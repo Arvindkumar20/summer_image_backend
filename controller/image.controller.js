@@ -40,6 +40,7 @@ export const generateImage = async (req, res) => {
             prompt,
         });
 
+        
         return res.status(201).json({
             message: "Image generated and uploaded successfully",
             image,
